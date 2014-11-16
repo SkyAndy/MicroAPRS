@@ -9,7 +9,10 @@ Modem_DEBUG = 1
 # Our target application
 TRG += Modem
 
-Modem_PREFIX = "/usr/bin/avr-"
+# Change 20131216 to you version of installed CrossPack
+# you can found it for OSX on http://www.obdev.at/products/crosspack/download.html
+
+Modem_PREFIX = "/usr/local/CrossPack-AVR-20131216/bin/avr-"
 
 Modem_SUFFIX = ""
 
