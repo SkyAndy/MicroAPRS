@@ -1,5 +1,6 @@
 MicroAPRS
 ==========
+* APRS is a registered trademark of APRS Software and Bob Bruninga, WB4APR.
 
 MicroAPRS is the APRS fork of [MicroModem](https://github.com/markqvist/MicroModem). It can be built very easily with an Arduino board based on the Atmega 328p, and around 15 common electronics components.
 
