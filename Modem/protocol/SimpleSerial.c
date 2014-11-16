@@ -6,6 +6,7 @@
 #define F_CPU 16000000UL
 #include <util/delay.h>
 #include "protocol/SimpleSerial.h"
+#include "drv/timer.h"
 
 bool PRINT_SRC = true;
 bool PRINT_DST = true;
@@ -30,6 +31,7 @@ char PATH1[6] = "WIDE1";
 int PATH1_SSID = 1;
 char PATH2[6] = "WIDE2";
 int PATH2_SSID = 2;
+int voltage = 0;
 
 AX25Call path[4];
 AX25Ctx *ax25ctx;
@@ -62,14 +64,14 @@ int EEMEM nvPREAMBLE;
 int EEMEM nvTAIL;
 
 // Location packet assembly fields
-char latitude[8];
-char longtitude[9];
+char latitude[8]="5148.58N";
+char longtitude[9]="00436.59E";
 char symbolTable = '/';
-char symbol = 'n';
+char symbol = 's';
 
-uint8_t power = 10;
+uint8_t power = 5;
 uint8_t height = 10;
-uint8_t gain = 10;
+uint8_t gain = 2;
 uint8_t directivity = 10;
 /////////////////////////
 
@@ -203,6 +205,8 @@ void ss_messageCallback(struct AX25Msg *msg, Serial *ser) {
         if (PRINT_INFO) kfile_print(&ser->fd, "DATA: ");
         kfile_printf(&ser->fd, "%.*s", msg->len, msg->info);
     }
+    get_voltage();
+    kfile_printf(&ser->fd,"\r\nVCC:%03dV",voltage);
     kfile_print(&ser->fd, "\r\n");
 
     if (message_autoAck && msg->len > 11) {
@@ -773,6 +777,26 @@ void ss_msgRetry(AX25Ctx *ax25) {
     ss_sendMsg(lastMessage, lastMessageLen, ax25);
 }
 
+void get_voltage(void)
+{
+    // For 168/328 boards
+    const long InternalReferenceVoltage = 1071L;  // Adjust this value to your boards specific internal BG voltage x1000
+    // REFS1 REFS0          --> 0 1, AVcc internal ref. -Selects AVcc external reference
+    // MUX3 MUX2 MUX1 MUX0  --> 1110 1.1V (VBG)         -Selects channel 14, bandgap voltage, to measure
+    ADMUX = (0<<REFS1) | (1<<REFS0) | (0<<ADLAR) | (1<<MUX3) | (1<<MUX2) | (1<<MUX1) | (0<<MUX0);
+    timer_delay(5000);
+    // Start a conversion
+    ADCSRA |= _BV( ADSC );
+    // Wait for it to complete
+    while( ( (ADCSRA & (1<<ADSC)) != 0 ) );
+    // Scale the value
+    voltage = (((InternalReferenceVoltage * 1024L) / ADC) + 5L) / 10L; // calculates for straight line value
+    kprintf("%03d",voltage);
+    /*
+     work currently not
+     */
+}
+
 void ss_printSettings(void) {
     kprintf("Configuration:\n");
     kprintf("Callsign: %.6s-%d\n", CALL, CALL_SSID);
@@ -793,6 +817,8 @@ void ss_printSettings(void) {
     kprintf("Symbol: %c\n", symbol);
     kprintf("TX Preamble: %d\n", custom_preamble);
     kprintf("TX Tail: %d\n", custom_tail);
+    
+    kprintf("VCC:%03dV\n",voltage);
 }
 
 #if ENABLE_HELP
@@ -840,5 +866,6 @@ void ss_printSettings(void) {
             kprintf("C         Clear configuration\n");
             kprintf("H         Print configuration\n");
             kprintf("----------------------------------\n");
+        
     }
 #endif

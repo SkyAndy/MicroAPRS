@@ -22,5 +22,6 @@ void ss_saveSettings(void);
 void ss_printSettings(void);
 
 void ss_printHelp(void);
+void get_voltage(void);
 
 #endif

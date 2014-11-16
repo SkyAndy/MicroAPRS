@@ -113,7 +113,7 @@ int main(void)
 {
     // Start by running the main initialization
     init();
-    
+
     #if SERIAL_PROTOCOL == PROTOCOL_KISS
         while (1) {
             // First we instruct the protocol to check for
