@@ -3,7 +3,7 @@
 #include <net/ax25.h>
 #include <drv/ser.h>
 
-#define DEFAULT_CALLSIGN "DO7NL"
+#define DEFAULT_CALLSIGN "DO7EN"
 #define DEFAULT_DESTINATION_CALL "APRS"
 
 void ss_init(AX25Ctx *ax25);
