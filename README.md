@@ -2,6 +2,12 @@ MicroAPRS
 ==========
 * APRS is a registered trademark of APRS Software and Bob Bruninga, WB4APR.
 
+KISS 1k2 Modem follow line in devices.h
+// Serial protocol settings
+#define SERIAL_PROTOCOL PROTOCOL_KISS
+// OR
+//#define SERIAL_PROTOCOL PROTOCOL_SIMPLE_SERIAL
+
 MicroAPRS is the APRS fork of [MicroModem](https://github.com/markqvist/MicroModem). It can be built very easily with an Arduino board based on the Atmega 328p, and around 15 common electronics components.
 
 Please read the "Quickstart.pdf" in the Documentation folder for some pointers on building the modem!
